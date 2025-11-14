@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "author": "Uri Shaked",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": -19.2, "left": 120.04, "attrs": {} },
+    { "type": "wokwi-gas-sensor", "id": "gas1", "top": -16.5, "left": -50.6, "attrs": {} },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": -26.4,
+      "left": 270.6,
+      "attrs": { "volume": "0.1" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "gas1:VCC", "esp:3V3", "red", [ "h0" ] ],
+    [ "gas1:GND", "esp:GND.2", "black", [ "h0" ] ],
+    [ "gas1:AOUT", "esp:34", "green", [ "h0" ] ],
+    [ "bz1:1", "esp:GND.3", "green", [ "v0" ] ],
+    [ "bz1:2", "esp:5", "green", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
