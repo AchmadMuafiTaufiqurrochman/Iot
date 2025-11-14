@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 
 #define MQ2_PIN 34
@@ -9,7 +10,8 @@
 #define WIFI_PASSWORD ""
 #define WIFI_CHANNEL 6
 
-const char* serverName = "https://sgqztz3w-5000.asse.devtunnels.ms/";
+// Gunakan path lengkap API Laravel (routes/api.php) — prefix `/api`
+const char* serverName = "https://sgqztz3w-8000.asse.devtunnels.ms/api/sensor-data";
 
 void setup() {
   Serial.begin(115200);
@@ -46,19 +48,24 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-    http.begin(serverName);
+    // Untuk dev-tunnel dengan sertifikat tidak dikenali (testing)
+    WiFiClientSecure client;
+    client.setInsecure();
+    http.begin(client, serverName);
     http.addHeader("Content-Type", "application/json");
 
-    String jsonData =
-      "{"
-      "\"adc\": \"" + String(raw) +
-      "\", \"status\": \"" + status +
-      "\", \"timestamp\": \"" + String(timestamp) +
-      "\"}";
+    // Build JSON safely, kirim adc dan timestamp sebagai numeric
+    String jsonData = String("{\"adc\": ") + String(raw) +
+                      String(", \"status\": \"") + status + String("\"") +
+                      String(", \"timestamp\": ") + String(timestamp) + String("}");
 
     int resp = http.POST(jsonData);
-    Serial.print("API Resp: ");
+    String respBody = http.getString();
+
+    Serial.print("API Resp code: ");
     Serial.println(resp);
+    Serial.print("API Resp body: ");
+    Serial.println(respBody);
 
     http.end();
   }
